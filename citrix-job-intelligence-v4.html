@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vishnu Citrix Job Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04060f;--card:#0c1220;--card2:#111a2e;
+  --border:#1a2744;--accent:#00e5ff;--accent2:#7c3aed;
+  --orange:#ff6b35;--green:#00d97e;--gold:#f5c542;
+  --text:#e8edf5;--muted:#5a7a9a;--soft:#8ba4c0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;}
+.bg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 10% 0%,rgba(0,229,255,0.07) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 90% 100%,rgba(124,58,237,0.09) 0%,transparent 60%),linear-gradient(180deg,#04060f,#060a18 50%,#04060f);}
+.bg::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.035) 1px,transparent 1px);background-size:50px 50px;mask-image:radial-gradient(ellipse 100% 80% at 50% 0%,black 20%,transparent 80%);animation:gridMove 25s linear infinite;}
+@keyframes gridMove{0%{background-position:0 0}100%{background-position:50px 50px}}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;animation:orbFloat 10s ease-in-out infinite;}
+.orb1{width:450px;height:450px;background:rgba(0,229,255,0.055);top:-120px;left:-120px;}
+.orb2{width:500px;height:500px;background:rgba(124,58,237,0.055);bottom:-150px;right:-100px;animation-delay:-4s;}
+.orb3{width:280px;height:280px;background:rgba(0,217,126,0.04);top:45%;left:55%;animation-delay:-7s;}
+@keyframes orbFloat{0%,100%{transform:translate(0,0)}33%{transform:translate(25px,-18px)}66%{transform:translate(-18px,25px)}}
+
+.app{position:relative;z-index:1;max-width:1160px;margin:0 auto;padding:2.5rem 1.5rem;}
+
+/* Header */
+.header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1.5rem;}
+.brand-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.35rem;}
+.brand-icon{width:50px;height:50px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 0 30px rgba(0,229,255,0.22);}
+.brand-title{font-size:2rem;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.brand-sub{color:var(--muted);font-size:.8rem;font-family:'JetBrains Mono',monospace;margin-bottom:.55rem;}
+.live-pill{display:inline-flex;align-items:center;gap:.45rem;background:rgba(0,217,126,.1);border:1px solid rgba(0,217,126,.25);border-radius:20px;padding:.22rem .85rem;font-size:.7rem;color:var(--green);font-family:'JetBrains Mono',monospace;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;animation:blink 1.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.header-right{display:flex;flex-direction:column;gap:.6rem;align-items:flex-end;}
+.profile{display:flex;align-items:center;gap:.7rem;background:var(--card);border:1px solid var(--border);border-radius:50px;padding:.55rem 1.1rem .55rem .55rem;cursor:pointer;transition:.2s;}
+.profile:hover{border-color:var(--accent);}
+.avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;color:#fff;box-shadow:0 0 14px rgba(0,229,255,.28);}
+.p-name{font-weight:700;font-size:.84rem;}
+.p-role{font-size:.7rem;color:var(--muted);}
+.profile-hint{font-size:.68rem;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;margin-bottom:2rem;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.1rem 1.2rem;position:relative;overflow:hidden;transition:.2s;}
+.stat:hover{border-color:var(--accent);transform:translateY(-2px);}
+.stat::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:16px 16px 0 0;}
+.s1::after{background:linear-gradient(90deg,var(--accent),transparent);}
+.s2::after{background:linear-gradient(90deg,var(--green),transparent);}
+.s3::after{background:linear-gradient(90deg,var(--orange),transparent);}
+.s4::after{background:linear-gradient(90deg,var(--gold),transparent);}
+.s5::after{background:linear-gradient(90deg,var(--accent2),transparent);}
+.stat-num{font-size:2rem;font-weight:800;font-family:'JetBrains Mono',monospace;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:.25rem;}
+.stat-lbl{font-size:.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+
+/* Controls */
+.controls{display:flex;align-items:center;gap:.6rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+.role-select{padding:.5rem .9rem;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--soft);font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;outline:none;transition:.2s;}
+.role-select:focus,.role-select:hover{border-color:var(--accent);color:var(--accent);}
+.fbtn{padding:.5rem 1.1rem;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:.2s;}
+.fbtn:hover,.fbtn.active{border-color:var(--accent);color:var(--accent);background:rgba(0,229,255,.07);}
+.sbtn{margin-left:auto;padding:.65rem 1.8rem;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:.5rem;box-shadow:0 4px 20px rgba(0,229,255,.2);}
+.sbtn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,229,255,.32);}
+.sbtn:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* Jobs header */
+.jobs-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;}
+.jobs-hdr h2{font-size:.82rem;font-weight:700;color:var(--soft);letter-spacing:.08em;text-transform:uppercase;}
+.jobs-ct{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--accent);}
+
+/* Cards */
+.jobs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:1.1rem;}
+.job-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.4rem;display:flex;flex-direction:column;gap:.7rem;transition:.25s;position:relative;overflow:hidden;}
+.job-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,229,255,.02),transparent 60%);opacity:0;transition:.25s;pointer-events:none;}
+.job-card:hover{border-color:rgba(0,229,255,.35);transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.4);}
+.job-card:hover::before{opacity:1;}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.7rem;}
+.co-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;font-weight:800;background:linear-gradient(135deg,var(--card2),var(--border));border:1px solid var(--border);color:var(--accent);flex-shrink:0;}
+.card-meta{flex:1;}
+.c-title{font-size:.94rem;font-weight:700;line-height:1.3;margin-bottom:.2rem;}
+.c-company{font-size:.78rem;color:var(--accent);font-weight:600;}
+.c-loc{font-size:.73rem;color:var(--muted);margin-top:.15rem;}
+
+/* Match bar */
+.match-bar-wrap{display:flex;align-items:center;gap:.6rem;}
+.match-bar-bg{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.match-bar-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+.match-pct{font-size:.7rem;font-weight:700;font-family:'JetBrains Mono',monospace;min-width:32px;text-align:right;}
+
+.badges{display:flex;gap:.4rem;flex-wrap:wrap;}
+.badge{padding:3px 9px;border-radius:20px;font-size:.65rem;font-weight:700;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+.b-high{background:rgba(0,217,126,.12);color:var(--green);border:1px solid rgba(0,217,126,.25);}
+.b-med{background:rgba(255,107,53,.12);color:var(--orange);border:1px solid rgba(255,107,53,.25);}
+.b-remote{background:rgba(124,58,237,.12);color:#a78bfa;border:1px solid rgba(124,58,237,.25);}
+.b-real{background:rgba(0,217,126,.07);color:var(--green);border:1px solid rgba(0,217,126,.15);font-size:.6rem;}
+.b-saved{background:rgba(245,197,66,.12);color:var(--gold);border:1px solid rgba(245,197,66,.25);}
+.b-applied{background:rgba(0,217,126,.12);color:var(--green);border:1px solid rgba(0,217,126,.25);}
+.b-interview{background:rgba(0,229,255,.12);color:var(--accent);border:1px solid rgba(0,229,255,.25);}
+.b-offer{background:rgba(245,197,66,.2);color:var(--gold);border:1px solid rgba(245,197,66,.4);}
+.b-rejected{background:rgba(255,107,53,.12);color:var(--orange);border:1px solid rgba(255,107,53,.25);}
+.b-missing{background:rgba(255,107,53,.08);color:#ff9a6c;border:1px solid rgba(255,107,53,.2);font-size:.6rem;}
+
+.c-desc{font-size:.78rem;color:var(--soft);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.card-footer{margin-top:auto;padding-top:.85rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;}
+.posted{font-size:.68rem;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.card-actions{display:flex;gap:.4rem;flex-wrap:wrap;}
+.abtn{padding:.36rem .85rem;border-radius:8px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-size:.72rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s;text-decoration:none;display:inline-block;white-space:nowrap;}
+.abtn:hover{background:var(--accent);color:#000;}
+.abtn.save{border-color:var(--gold);color:var(--gold);}
+.abtn.save:hover{background:var(--gold);color:#000;}
+.abtn.view{border-color:var(--accent2);color:var(--accent2);}
+.abtn.view:hover{background:var(--accent2);color:#fff;}
+.abtn.ai{border-color:var(--green);color:var(--green);}
+.abtn.ai:hover{background:var(--green);color:#000;}
+
+/* Skeleton */
+.skel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:1.1rem;}
+.skel-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.4rem;}
+.sk{height:12px;border-radius:6px;margin-bottom:.6rem;background:linear-gradient(90deg,var(--border) 25%,var(--card2) 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;}
+.sk.s{width:50%}.sk.m{width:75%}.sk.f{width:100%}
+.sk-circle{width:44px;height:44px;border-radius:12px;background:var(--border);animation:shimmer 1.5s infinite;margin-bottom:.75rem;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* Empty */
+.empty{text-align:center;padding:5rem 2rem;color:var(--muted);}
+.mnc-section{margin-top:3rem;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.8rem;}
+.mnc-header{font-size:1rem;font-weight:700;margin-bottom:1.2rem;display:flex;align-items:center;gap:.5rem;}
+.mnc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem;}
+.mnc-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:.9rem 1rem;text-decoration:none;display:flex;align-items:center;justify-content:space-between;gap:.5rem;transition:.2s;}
+.mnc-card:hover{border-color:var(--accent);transform:translateY(-2px);background:rgba(0,229,255,.05);}
+.mnc-name{font-size:.82rem;font-weight:700;color:var(--text);}
+.mnc-sub{font-size:.68rem;color:var(--muted);}
+.mnc-arrow{color:var(--accent);font-size:.9rem;}
+.missing-wrap{margin-top:.3rem;}
+.missing-label{font-size:.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:.3rem;}
+.empty .eicon{font-size:3.5rem;margin-bottom:1rem;}
+.empty h3{color:var(--soft);font-size:1.1rem;margin-bottom:.5rem;}
+.empty p{font-size:.87rem;line-height:1.6;}
+
+/* Modal base */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;justify-content:center;align-items:center;padding:1rem;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:#0c1220;border:1px solid var(--border);border-radius:20px;width:100%;max-width:720px;max-height:88vh;overflow-y:auto;padding:2rem;position:relative;}
+.modal::-webkit-scrollbar{width:4px;}
+.modal::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.modal-close{position:absolute;top:1rem;right:1rem;background:var(--card2);border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{color:var(--text);border-color:var(--accent);}
+.modal-title{font-size:1.2rem;font-weight:700;margin-bottom:.3rem;line-height:1.3;}
+.modal-company{color:var(--accent);font-size:.9rem;font-weight:600;margin-bottom:.75rem;}
+.modal-section{margin-top:1.2rem;}
+.modal-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:.4rem;}
+.modal-desc{font-size:.84rem;color:var(--soft);line-height:1.7;white-space:pre-wrap;max-height:200px;overflow-y:auto;}
+.modal-actions{display:flex;gap:.75rem;margin-top:1.5rem;flex-wrap:wrap;}
+.m-btn{padding:.6rem 1.4rem;border-radius:10px;font-weight:700;font-size:.85rem;cursor:pointer;border:none;text-decoration:none;display:inline-block;transition:.2s;}
+.m-apply{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
+.m-company{border:1.5px solid var(--accent2);background:transparent;color:var(--accent2);}
+.m-company:hover{background:var(--accent2);color:#fff;}
+.m-applied{border:1.5px solid var(--green);background:transparent;color:var(--green);}
+.m-applied:hover{background:var(--green);color:#000;}
+.m-copy{border:1.5px solid var(--gold);background:transparent;color:var(--gold);}
+.m-copy:hover{background:var(--gold);color:#000;}
+
+/* Status selector */
+.status-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem;}
+.status-opt{padding:.3rem .85rem;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:.72rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s;}
+.status-opt:hover{border-color:var(--accent);color:var(--accent);}
+.status-opt.active-status{border-color:var(--accent);background:rgba(0,229,255,.1);color:var(--accent);}
+
+/* AI Tips section */
+.ai-box{background:var(--card2);border:1px solid rgba(0,217,126,.2);border-radius:12px;padding:1.1rem;margin-top:.75rem;}
+.ai-loading{display:flex;align-items:center;gap:.6rem;color:var(--green);font-size:.83rem;}
+.ai-spinner{width:16px;height:16px;border:2px solid rgba(0,217,126,.2);border-top-color:var(--green);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
+.ai-tips{font-size:.83rem;color:var(--soft);line-height:1.75;white-space:pre-wrap;}
+
+/* Profile Panel */
+.profile-panel{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.5rem;margin-bottom:2rem;display:none;}
+.profile-panel.open{display:block;}
+.pp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;}
+.pp-header h3{font-size:1rem;font-weight:700;}
+.pp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.85rem;margin-bottom:1rem;}
+.pp-field{display:flex;flex-direction:column;gap:.3rem;}
+.pp-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.pp-input{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;color:var(--text);font-family:'Inter',sans-serif;font-size:.83rem;outline:none;transition:.2s;width:100%;}
+.pp-input:focus{border-color:var(--accent);}
+.pp-actions{display:flex;gap:.75rem;flex-wrap:wrap;}
+.pp-save{padding:.55rem 1.4rem;border-radius:9px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;font-size:.83rem;cursor:pointer;}
+.pp-copy{padding:.55rem 1.4rem;border-radius:9px;border:1.5px solid var(--gold);background:transparent;color:var(--gold);font-weight:700;font-size:.83rem;cursor:pointer;}
+.pp-copy:hover{background:var(--gold);color:#000;}
+.pp-saved-note{font-size:.72rem;color:var(--green);font-family:'JetBrains Mono',monospace;display:none;}
+
+/* Copy toast */
+.toast{position:fixed;bottom:2rem;right:2rem;background:#0c1220;border:1px solid var(--green);border-radius:10px;padding:.7rem 1.2rem;font-size:.82rem;color:var(--green);z-index:99999;opacity:0;transform:translateY(10px);transition:.3s;pointer-events:none;font-family:'JetBrains Mono',monospace;}
+.toast.show{opacity:1;transform:translateY(0);}
+
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+/* ── Chat Assistant ── */
+.chat-fab{position:fixed;bottom:2rem;right:2rem;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 4px 24px rgba(0,229,255,0.4);z-index:8888;transition:.3s;animation:fabPulse 2s ease-in-out infinite;}
+.chat-fab:hover{transform:scale(1.1);}
+@keyframes fabPulse{0%,100%{box-shadow:0 4px 24px rgba(0,229,255,0.4)}50%{box-shadow:0 4px 36px rgba(0,229,255,0.7)}}
+.chat-panel{position:fixed;bottom:5.5rem;right:2rem;width:400px;height:560px;background:#0c1220;border:1px solid var(--border);border-radius:20px;display:flex;flex-direction:column;z-index:8888;box-shadow:0 24px 60px rgba(0,0,0,0.6);transform:scale(0.9) translateY(20px);opacity:0;pointer-events:none;transition:.3s cubic-bezier(.34,1.56,.64,1);}
+.chat-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all;}
+.chat-header{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.chat-header-left{display:flex;align-items:center;gap:.6rem;}
+.chat-bot-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+.chat-title{font-weight:700;font-size:.88rem;}
+.chat-subtitle{font-size:.68rem;color:var(--green);font-family:'JetBrains Mono',monospace;}
+.chat-close{background:none;border:1px solid var(--border);color:var(--muted);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:.85rem;}
+.chat-close:hover{border-color:var(--accent);color:var(--accent);}
+.chat-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.75rem;}
+.chat-messages::-webkit-scrollbar{width:3px;}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.chat-msg{display:flex;gap:.5rem;align-items:flex-start;}
+.chat-msg.user{flex-direction:row-reverse;}
+.msg-avatar{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;}
+.msg-avatar.bot{background:linear-gradient(135deg,var(--accent),var(--accent2));}
+.msg-avatar.usr{background:linear-gradient(135deg,var(--accent2),var(--orange));}
+.msg-bubble{max-width:85%;padding:.6rem .85rem;border-radius:12px;font-size:.8rem;line-height:1.55;}
+.msg-bubble.bot{background:var(--card2);border:1px solid var(--border);color:var(--text);}
+.msg-bubble.usr{background:linear-gradient(135deg,rgba(0,229,255,.15),rgba(124,58,237,.15));border:1px solid rgba(0,229,255,.2);color:var(--text);}
+.chat-typing{display:flex;gap:4px;align-items:center;padding:.5rem .85rem;}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:typingBounce .8s ease-in-out infinite;}
+.typing-dot:nth-child(2){animation-delay:.15s;}
+.typing-dot:nth-child(3){animation-delay:.3s;}
+@keyframes typingBounce{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-4px);opacity:1}}
+.chat-suggestions{padding:.5rem .75rem;display:flex;gap:.4rem;flex-wrap:wrap;border-top:1px solid var(--border);flex-shrink:0;}
+.chat-chip{padding:.28rem .7rem;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.68rem;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s;white-space:nowrap;}
+.chat-chip:hover{border-color:var(--accent);color:var(--accent);}
+.chat-input-row{padding:.75rem;border-top:1px solid var(--border);display:flex;gap:.5rem;flex-shrink:0;}
+.chat-input{flex:1;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:.5rem .85rem;color:var(--text);font-family:'Inter',sans-serif;font-size:.82rem;outline:none;transition:.2s;}
+.chat-input:focus{border-color:var(--accent);}
+.chat-send{width:36px;height:36px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s;}
+.chat-send:hover{transform:scale(1.08);}
+.chat-send:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+@media(max-width:480px){.chat-panel{width:calc(100vw - 2rem);right:1rem;}}
+
+@media(max-width:700px){
+  .stats-row{grid-template-columns:repeat(3,1fr);}
+  .brand-title{font-size:1.5rem;}
+  .sbtn{margin-left:0;width:100%;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="brand-row">
+        <div class="brand-icon">🎯</div>
+        <div class="brand-title">Citrix Job Intelligence</div>
+      </div>
+      <div class="brand-sub">// vishnu.reddy · 4.5yr · citrix specialist</div>
+      <div class="live-pill"><span class="dot"></span> LIVE REAL JOBS · Adzuna API</div>
+    </div>
+    <div class="header-right">
+      <div class="profile" onclick="toggleProfile()">
+        <div class="avatar">V</div>
+        <div>
+          <div class="p-name">Vishnu Reddy</div>
+          <div class="p-role">Citrix Engineer · 4.5 yrs</div>
+        </div>
+      </div>
+      <div class="profile-hint">👆 Click to edit your profile</div>
+    </div>
+  </div>
+
+  <!-- Profile Panel -->
+  <div class="profile-panel" id="profilePanel">
+    <div class="pp-header">
+      <h3>👤 My Profile — Pre-saved for Quick Apply</h3>
+      <button class="modal-close" onclick="toggleProfile()">✕</button>
+    </div>
+    <div class="pp-grid">
+      <div class="pp-field"><div class="pp-label">Full Name</div><input class="pp-input" id="pName" placeholder="Vishnu Reddy"/></div>
+      <div class="pp-field"><div class="pp-label">Email</div><input class="pp-input" id="pEmail" placeholder="vishnureddy2523@gmail.com"/></div>
+      <div class="pp-field"><div class="pp-label">Phone</div><input class="pp-input" id="pPhone" placeholder="+91 XXXXXXXXXX"/></div>
+      <div class="pp-field"><div class="pp-label">Experience</div><input class="pp-input" id="pExp" placeholder="4.5 years"/></div>
+      <div class="pp-field"><div class="pp-label">Expected Salary</div><input class="pp-input" id="pSalary" placeholder="12 LPA or $90k"/></div>
+      <div class="pp-field"><div class="pp-label">Notice Period</div><input class="pp-input" id="pNotice" placeholder="30 days / Immediate"/></div>
+      <div class="pp-field"><div class="pp-label">Current Location</div><input class="pp-input" id="pLocation" placeholder="Hyderabad, India"/></div>
+      <div class="pp-field"><div class="pp-label">LinkedIn</div><input class="pp-input" id="pLinkedin" placeholder="linkedin.com/in/vishnu"/></div>
+    </div>
+    <div class="pp-field" style="margin-bottom:.85rem">
+      <div class="pp-label">Top Skills (comma separated)</div>
+      <input class="pp-input" id="pSkills" placeholder="Citrix CVAD, VDA, StoreFront, HDX, NetScaler, ADC, MCS, PVS, XenApp, XenDesktop"/>
+    </div>
+    <div class="pp-actions">
+      <button class="pp-save" onclick="saveProfile()">💾 Save Profile</button>
+      <button class="pp-copy" onclick="copyProfile()">📋 Copy for Application</button>
+      <span class="pp-saved-note" id="ppNote">✅ Profile saved!</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat s1"><div class="stat-num" id="sTotal">0</div><div class="stat-lbl">Live Jobs</div></div>
+    <div class="stat s2"><div class="stat-num" id="sHigh">0</div><div class="stat-lbl">High Match</div></div>
+    <div class="stat s3"><div class="stat-num" id="sRemote">0</div><div class="stat-lbl">Remote</div></div>
+    <div class="stat s4"><div class="stat-num" id="sSaved">0</div><div class="stat-lbl">Saved</div></div>
+    <div class="stat s5"><div class="stat-num" id="sApplied">0</div><div class="stat-lbl">Applied</div></div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <select class="role-select" id="roleFilter">
+      <option value="all">🎯 All Citrix Roles</option>
+      <option value="citrix">💻 Citrix Engineer</option>
+      <option value="vdi">🖥️ VDI / EUC</option>
+      <option value="adc">🔀 NetScaler / ADC</option>
+      <option value="cloud">☁️ Cloud VDI</option>
+    </select>
+    <button class="fbtn active" onclick="setFilter('all',this)">🌐 All</button>
+    <button class="fbtn" onclick="setFilter('in',this)">🇮🇳 India</button>
+    <button class="fbtn" onclick="setFilter('us',this)">🇺🇸 USA</button>
+    <button class="fbtn" onclick="setFilter('gb',this)">🇬🇧 UK</button>
+    <button class="fbtn" onclick="setFilter('remote',this)">🏠 Remote</button>
+    <button class="fbtn" onclick="setFilter('saved',this)">★ Saved</button>
+    <button class="fbtn" onclick="setFilter('applied',this)">✔ Applied</button>
+    <button class="sbtn" id="searchBtn" onclick="fetchJobs()">
+      <span id="btnIcon">⚡</span>&nbsp;<span id="btnTxt">Find Real Jobs</span>
+    </button>
+  </div>
+
+  <!-- Jobs -->
+  <div class="jobs-hdr">
+    <h2>Live Openings <span class="dot" style="margin-left:6px"></span></h2>
+    <span class="jobs-ct" id="jobsCt">Click "Find Real Jobs" to start</span>
+  </div>
+
+  <div id="jobsContainer">
+    <div class="empty">
+      <div class="eicon">🔍</div>
+      <h3>Your Citrix Job Intelligence is Ready!</h3>
+      <p>Click <strong>Find Real Jobs</strong> to scan live Citrix openings from Adzuna.<br>Set up your profile above for quick apply! 👆</p>
+    </div>
+  </div>
+  <!-- MNC Career Portals -->
+  <div class="mnc-section">
+    <div class="mnc-header">🔥 Direct MNC Career Portals — Apply Directly!</div>
+    <div class="mnc-grid">
+      <a class="mnc-card" href="https://career.infosys.com/joblist?keyword=Citrix" target="_blank" rel="noopener noreferrer"><div><div class="mnc-name">Infosys</div><div class="mnc-sub">Citrix Jobs</div></div><span class="mnc-arrow">→</span></a>
+      <a class="mnc-card" href="https://careers.wipro.com/search/?q=Citrix" target="_blank" rel="noopener noreferrer"><div><div class="mnc-name">Wipro</div><div class="mnc-sub">Citrix Jobs</div></div><span class="mnc-arrow">→</span></a>
+      <a class="mnc-card" href="https://ibegin.tcs.com/iBegin/searchjobs?keyword=Citrix" target="_blank" rel="noopener noreferrer"><div><div class="mnc-name">TCS</div><div class="mnc-sub">Citrix Jobs</div></div><span class="mnc-arrow">→</span></a>
+      <a class="mnc-card" href="https://careers.cognizant.com/global/en/search-results?keywords=Citrix" target="_blank" rel="noopener noreferrer"><div><div class="mnc-name">Cognizant</div><div class="mnc-sub">Citrix Jobs</div></div><span class="mnc-arrow">→</span></a>
+      <a class="mnc-card" href="https://www.capgemini.com/in-en/careers/jobs/?search=Citrix" target="_blank" rel="noopener noreferrer"><div><div class="mnc-name">Capgemini</div><div class="mnc-sub">Citrix Jobs</div></div><span class="mnc-arrow">→</span></a>
+      <a class="mnc-card" href="https://apply.deloitte.com/search/?q=Citrix" target="_blank" rel="noopener noreferrer"><div><div class="mnc-name">Deloitte</div><div class="mnc-sub">Citrix Jobs</div></div><span class="mnc-arrow">→</span></a>
+      <a class="mnc-card" href="https://jobs.thecignagroup.com/us/en/search-results?keywords=Citrix" target="_blank" rel="noopener noreferrer"><div><div class="mnc-name">Evernorth / Cigna</div><div class="mnc-sub">Citrix Jobs</div></div><span class="mnc-arrow">→</span></a>
+      <a class="mnc-card" href="https://www.hcltech.com/careers/job-search?keyword=Citrix" target="_blank" rel="noopener noreferrer"><div><div class="mnc-name">HCL Tech</div><div class="mnc-sub">Citrix Jobs</div></div><span class="mnc-arrow">→</span></a>
+      <a class="mnc-card" href="https://www.ibm.com/careers/search?field_keyword_08[]=Citrix" target="_blank" rel="noopener noreferrer"><div><div class="mnc-name">IBM</div><div class="mnc-sub">Citrix Jobs</div></div><span class="mnc-arrow">→</span></a>
+      <a class="mnc-card" href="https://www.accenture.com/in-en/careers/jobsearch?jk=citrix" target="_blank" rel="noopener noreferrer"><div><div class="mnc-name">Accenture</div><div class="mnc-sub">Citrix Jobs</div></div><span class="mnc-arrow">→</span></a>
+      <a class="mnc-card" href="https://dxc.wd1.myworkdayjobs.com/DXC_Careers?q=Citrix" target="_blank" rel="noopener noreferrer"><div><div class="mnc-name">DXC Technology</div><div class="mnc-sub">Citrix Jobs</div></div><span class="mnc-arrow">→</span></a>
+      <a class="mnc-card" href="https://careers.techmahindra.com/search/?q=Citrix" target="_blank" rel="noopener noreferrer"><div><div class="mnc-name">Tech Mahindra</div><div class="mnc-sub">Citrix Jobs</div></div><span class="mnc-arrow">→</span></a>
+    </div>
+  </div>
+</div>
+
+<!-- Job Detail Modal -->
+<div class="modal-overlay" id="jobModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title" id="mTitle"></div>
+    <div class="modal-company" id="mCompany"></div>
+    <div class="badges" id="mBadges" style="margin-bottom:.5rem"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.8rem">
+      <div>
+        <div class="modal-label">📍 Location</div>
+        <div style="font-size:.84rem;color:var(--soft)" id="mLocation"></div>
+      </div>
+      <div>
+        <div class="modal-label">💰 Salary</div>
+        <div style="font-size:.84rem;color:var(--soft)" id="mSalary"></div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-label">📋 Job Description</div>
+      <div class="modal-desc" id="mDesc"></div>
+    </div>
+
+    <!-- Application Status -->
+    <div class="modal-section">
+      <div class="modal-label">📊 Application Status</div>
+      <div class="status-row">
+        <button class="status-opt" onclick="setStatus('saved')">★ Save</button>
+        <button class="status-opt" onclick="setStatus('applied')">📤 Applied</button>
+        <button class="status-opt" onclick="setStatus('hr')">👥 HR Round</button>
+        <button class="status-opt" onclick="setStatus('technical')">💻 Technical</button>
+        <button class="status-opt" onclick="setStatus('final')">🏁 Final Round</button>
+        <button class="status-opt" onclick="setStatus('offer')">🎉 Offer</button>
+        <button class="status-opt" onclick="setStatus('rejected')">❌ Rejected</button>
+      </div>
+    </div>
+
+    <!-- AI Interview Tips -->
+    <div class="modal-section">
+      <div class="modal-label">🤖 AI Interview Tips</div>
+      <div class="ai-box" id="aiTipsBox">
+        <div style="font-size:.82rem;color:var(--muted)">Click "Get AI Tips" to generate personalised interview tips for this job.</div>
+      </div>
+      <button class="abtn ai" style="margin-top:.75rem" onclick="getAITips()" id="aiTipsBtn">🤖 Get AI Interview Tips</button>
+    </div>
+
+    <div class="modal-actions">
+      <a class="m-btn m-apply" id="mApply" target="_blank" rel="noopener noreferrer">🚀 Apply Now</a>
+      <a class="m-btn m-company" id="mCareers" target="_blank" rel="noopener noreferrer">🏢 Company Careers</a>
+      <button class="m-btn m-copy" onclick="copyProfileForJob()">📋 Copy My Details</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Config ──
+var APP_ID   = "f0ebafeb";
+var APP_KEY  = "9b74fa781158e3c84e44b506d7a41c4d";
+var GROQ_KEY = "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";
+var KEYWORD_GROUPS = {
+  all:    ["Citrix Engineer","Citrix Administrator","EUC Engineer","VDI Specialist"],
+  citrix: ["Citrix Engineer","Citrix Administrator","Senior Citrix Engineer"],
+  vdi:    ["VDI Specialist","EUC Engineer","Virtualization Engineer"],
+  adc:    ["NetScaler Engineer","Citrix ADC","NetScaler Admin"],
+  cloud:  ["Azure Virtual Desktop","Cloud VDI","Windows Virtual Desktop"]
+};
+var CTRIES   = [{code:"in",flag:"🇮🇳"},{code:"us",flag:"🇺🇸"},{code:"gb",flag:"🇬🇧"}];
+
+// ── State ──
+var ALL_JOBS     = [];
+var jobStatus    = {};  // id -> 'saved'|'applied'|'interview'|'offer'|'rejected'
+var activeFilter = "all";
+var currentIdx   = null;
+
+// ── Profile (in-memory with defaults) ──
+var PROFILE = {
+  name:     "Vishnu Reddy",
+  email:    "vishnureddy2523@gmail.com",
+  phone:    "",
+  exp:      "4.5 years",
+  salary:   "12 LPA",
+  notice:   "30 days",
+  location: "Hyderabad, India",
+  linkedin: "",
+  skills:   "Citrix CVAD, VDA, StoreFront, HDX, NetScaler, ADC, MCS, PVS, XenApp, XenDesktop, Windows Server"
+};
+
+// Load profile into fields on start
+window.onload = function(){
+  document.getElementById("pName").value     = PROFILE.name;
+  document.getElementById("pEmail").value    = PROFILE.email;
+  document.getElementById("pPhone").value    = PROFILE.phone;
+  document.getElementById("pExp").value      = PROFILE.exp;
+  document.getElementById("pSalary").value   = PROFILE.salary;
+  document.getElementById("pNotice").value   = PROFILE.notice;
+  document.getElementById("pLocation").value = PROFILE.location;
+  document.getElementById("pLinkedin").value = PROFILE.linkedin;
+  document.getElementById("pSkills").value   = PROFILE.skills;
+};
+
+function toggleProfile(){
+  var p = document.getElementById("profilePanel");
+  p.classList.toggle("open");
+}
+
+function saveProfile(){
+  PROFILE.name     = document.getElementById("pName").value;
+  PROFILE.email    = document.getElementById("pEmail").value;
+  PROFILE.phone    = document.getElementById("pPhone").value;
+  PROFILE.exp      = document.getElementById("pExp").value;
+  PROFILE.salary   = document.getElementById("pSalary").value;
+  PROFILE.notice   = document.getElementById("pNotice").value;
+  PROFILE.location = document.getElementById("pLocation").value;
+  PROFILE.linkedin = document.getElementById("pLinkedin").value;
+  PROFILE.skills   = document.getElementById("pSkills").value;
+  var note = document.getElementById("ppNote");
+  note.style.display="inline";
+  setTimeout(function(){note.style.display="none";},2500);
+  showToast("✅ Profile saved!");
+}
+
+function copyProfile(){
+  saveProfile();
+  var text = "Name: "+PROFILE.name+"\n"
+    +"Email: "+PROFILE.email+"\n"
+    +"Phone: "+PROFILE.phone+"\n"
+    +"Experience: "+PROFILE.exp+"\n"
+    +"Expected Salary: "+PROFILE.salary+"\n"
+    +"Notice Period: "+PROFILE.notice+"\n"
+    +"Location: "+PROFILE.location+"\n"
+    +(PROFILE.linkedin?"LinkedIn: "+PROFILE.linkedin+"\n":"")
+    +"Skills: "+PROFILE.skills;
+  navigator.clipboard.writeText(text).then(function(){
+    showToast("📋 Profile copied! Paste it in any application form.");
+  });
+}
+
+function copyProfileForJob(){
+  var job = currentIdx!==null ? ALL_JOBS[currentIdx] : null;
+  var jobLine = job ? "Applying for: "+job.title+" at "+job.company+"\n\n" : "";
+  var text = jobLine
+    +"Name: "+PROFILE.name+"\n"
+    +"Email: "+PROFILE.email+"\n"
+    +"Phone: "+PROFILE.phone+"\n"
+    +"Experience: "+PROFILE.exp+"\n"
+    +"Expected Salary: "+PROFILE.salary+"\n"
+    +"Notice Period: "+PROFILE.notice+"\n"
+    +"Location: "+PROFILE.location+"\n"
+    +(PROFILE.linkedin?"LinkedIn: "+PROFILE.linkedin+"\n":"")
+    +"Skills: "+PROFILE.skills;
+  navigator.clipboard.writeText(text).then(function(){
+    showToast("📋 Your details copied! Paste directly in the application form.");
+  });
+}
+
+// ── Fetch Jobs ──
+async function fetchJobs(){
+  var btn  = document.getElementById("searchBtn");
+  var icon = document.getElementById("btnIcon");
+  var txt  = document.getElementById("btnTxt");
+  btn.disabled=true; icon.style.animation="spin 1s linear infinite"; icon.innerText="⟳"; txt.innerText="Scanning...";
+  document.getElementById("jobsCt").innerText = "Fetching real live jobs...";
+  document.getElementById("jobsContainer").innerHTML = buildSkeletons(9);
+  ALL_JOBS=[];
+  var roleFilter=document.getElementById("roleFilter").value;
+  var TERMS=KEYWORD_GROUPS[roleFilter]||KEYWORD_GROUPS["all"];
+
+  for(var ci=0;ci<CTRIES.length;ci++){
+    var c=CTRIES[ci];
+    for(var ti=0;ti<Math.min(TERMS.length,3);ti++){
+      var term=TERMS[ti];
+      try{
+        var url="https://api.adzuna.com/v1/api/jobs/"+c.code+"/search/1"
+          +"?app_id="+APP_ID+"&app_key="+APP_KEY
+          +"&results_per_page=10&what="+encodeURIComponent(term)
+          +"&max_days_old=15&sort_by=date&content-type=application/json";
+        var res=await fetch(url);
+        if(!res.ok) continue;
+        var data=await res.json();
+        if(!data.results) continue;
+        data.results.forEach(function(j){
+          if(!ALL_JOBS.find(function(x){return x.id===j.id;})){
+            var desc=j.description||"";
+            ALL_JOBS.push({
+              id:      j.id,
+              title:   j.title||"Citrix Role",
+              company: (j.company&&j.company.display_name)?j.company.display_name:"Confidential",
+              location:(j.location&&j.location.display_name)?j.location.display_name:c.code.toUpperCase(),
+              country: c.code, flag:c.flag,
+              desc:    desc,
+              created: j.created||"",
+              applyUrl:j.redirect_url||"",
+              salMin:  j.salary_min||null,
+              salMax:  j.salary_max||null,
+              remote:  desc.toLowerCase().indexOf("remote")>-1,
+              match:   calcMatch(j.title,desc)
+            });
+          }
+        });
+      }catch(e){console.warn(e);}
+    }
+  }
+
+  btn.disabled=false; icon.style.animation=""; icon.innerText="⚡"; txt.innerText="Refresh Jobs";
+  renderJobs();
+}
+
+// ── Smarter match using YOUR actual skills ──
+function calcMatch(title,desc){
+  var mySkills = PROFILE.skills.toLowerCase().split(",").map(function(s){return s.trim();});
+  var generalKw = ["citrix","xenapp","xendesktop","vdi","netscaler","adc","storefront","euc","cvad","vda"];
+  var allKw = mySkills.concat(generalKw);
+  var uniqueKw = allKw.filter(function(v,i,a){return a.indexOf(v)===i && v.length>2;});
+  var t=((title||"")+" "+(desc||"")).toLowerCase();
+  var hits=uniqueKw.filter(function(k){return t.indexOf(k)>-1;});
+  var missing=uniqueKw.filter(function(k){return t.indexOf(k)===-1;}).slice(0,4);
+  var score=Math.min(Math.round((hits.length/Math.max(uniqueKw.length,1))*100*2.5),100);
+  return {score:score, missing:missing};
+}
+
+function setFilter(f,btn){
+  activeFilter=f;
+  document.querySelectorAll(".fbtn").forEach(function(b){b.classList.remove("active");});
+  btn.classList.add("active");
+  if(ALL_JOBS.length>0) renderJobs();
+}
+
+function getFiltered(){
+  var saved=Object.keys(jobStatus).filter(function(id){return jobStatus[id]==="saved";});
+  var applied=Object.keys(jobStatus).filter(function(id){return ["applied","interview","offer"].indexOf(jobStatus[id])>-1;});
+  if(activeFilter==="saved")   return ALL_JOBS.filter(function(j){return saved.indexOf(j.id)>-1;});
+  if(activeFilter==="applied") return ALL_JOBS.filter(function(j){return applied.indexOf(j.id)>-1;});
+  if(activeFilter==="remote")  return ALL_JOBS.filter(function(j){return j.remote;});
+  if(activeFilter==="all")     return ALL_JOBS;
+  return ALL_JOBS.filter(function(j){return j.country===activeFilter;});
+}
+
+function updateStats(){
+  var saved=Object.values(jobStatus).filter(function(s){return s==="saved";}).length;
+  var applied=Object.values(jobStatus).filter(function(s){return["applied","interview","offer"].indexOf(s)>-1;}).length;
+  document.getElementById("sTotal").innerText   = ALL_JOBS.length;
+  document.getElementById("sHigh").innerText    = ALL_JOBS.filter(function(j){return j.match>=70;}).length;
+  document.getElementById("sRemote").innerText  = ALL_JOBS.filter(function(j){return j.remote;}).length;
+  document.getElementById("sSaved").innerText   = saved;
+  document.getElementById("sApplied").innerText = applied;
+}
+
+function renderJobs(){
+  updateStats();
+  var list=getFiltered();
+  document.getElementById("jobsCt").innerText=list.length+" real live openings found";
+  if(list.length===0){
+    document.getElementById("jobsContainer").innerHTML="<div class='empty'><div class='eicon'>🔍</div><h3>No jobs here</h3><p>Try a different filter.</p></div>";
+    return;
+  }
+  var cards=list.map(function(job){
+    var idx=ALL_JOBS.indexOf(job);
+    var days=job.created?Math.floor((Date.now()-new Date(job.created))/86400000):null;
+    var posted=days===null?"":days===0?"🟢 Today":days===1?"🟢 Yesterday":days<=7?"🟢 "+days+"d ago":"🟡 "+days+"d ago";
+    var status=jobStatus[job.id]||"";
+    var statusBadge="";
+    if(status==="saved")     statusBadge="<span class='badge b-saved'>★ Saved</span>";
+    if(status==="applied")   statusBadge="<span class='badge b-applied'>✔ Applied</span>";
+    if(status==="hr")        statusBadge="<span class='badge b-interview'>👥 HR Round</span>";
+    if(status==="technical") statusBadge="<span class='badge b-interview'>💻 Technical</span>";
+    if(status==="final")     statusBadge="<span class='badge b-interview'>🏁 Final Round</span>";
+    if(status==="interview") statusBadge="<span class='badge b-interview'>🎤 Interview</span>";
+    if(status==="offer")     statusBadge="<span class='badge b-offer'>🎉 Offer!</span>";
+    if(status==="rejected")  statusBadge="<span class='badge b-rejected'>❌ Rejected</span>";
+
+    var matchCls=job.match>=70?"b-high":"b-med";
+    var barColor=job.match>=70?"var(--green)":job.match>=40?"var(--orange)":"var(--muted)";
+    var desc=job.desc?esc(job.desc.substring(0,140))+"...":"Click Details for full description.";
+    var initial=job.company.charAt(0).toUpperCase();
+
+    return "<div class='job-card'>"
+      +"<span class='badge b-real'>✅ REAL · ADZUNA</span>"
+      +"<div class='card-top'>"
+      +"<div class='co-icon'>"+initial+"</div>"
+      +"<div class='card-meta'>"
+      +"<div class='c-title'>"+esc(job.title)+"</div>"
+      +"<div class='c-company'>"+esc(job.company)+"</div>"
+      +"<div class='c-loc'>"+job.flag+" "+esc(job.location)+"</div>"
+      +"</div></div>"
+      +"<div class='match-bar-wrap'>"
+      +"<div class='match-bar-bg'><div class='match-bar-fill' style='width:"+job.match+"%;background:"+barColor+"'></div></div>"
+      +"<span class='match-pct' style='color:"+barColor+"'>"+job.match+"%</span>"
+      +"</div>"
+      +"<div class='badges'>"
+      +(job.remote?"<span class='badge b-remote'>🏠 Remote</span>":"")
+      +statusBadge
+      +"</div>"
+      +(job.missing&&job.missing.length?"<div class='missing-wrap'><div class='missing-label'>⚠️ Skills to highlight: "+job.missing.slice(0,3).join(", ")+"</div></div>":"")
+      +"<div class='c-desc'>"+desc+"</div>"
+      +"<div class='card-footer'>"
+      +"<span class='posted'>"+posted+"</span>"
+      +"<div class='card-actions'>"
+      +"<button class='abtn view' onclick='openModal("+idx+")'>Details</button>"
+      +"<button class='abtn ai' onclick='quickAI("+idx+",this)'>🤖 Tips</button>"
+      +(job.applyUrl?"<a class='abtn' href='"+job.applyUrl+"' target='_blank' rel='noopener noreferrer'>Apply →</a>":"")
+      +"</div></div>"
+      +"</div>";
+  }).join("");
+  document.getElementById("jobsContainer").innerHTML="<div class='jobs-grid'>"+cards+"</div>";
+}
+
+// ── Quick AI tips on card (without opening modal) ──
+async function quickAI(idx, btn){
+  var job=ALL_JOBS[idx];
+  btn.disabled=true; btn.innerText="⟳ Loading...";
+  var tips=await fetchAITips(job);
+  btn.disabled=false; btn.innerText="🤖 Tips";
+  // Open modal with tips pre-loaded
+  openModal(idx);
+  document.getElementById("aiTipsBox").innerHTML="<div class='ai-tips'>"+esc(tips)+"</div>";
+}
+
+// ── Open modal ──
+function openModal(idx){
+  currentIdx=idx;
+  var job=ALL_JOBS[idx];
+  document.getElementById("mTitle").innerText   = job.title;
+  document.getElementById("mCompany").innerText = job.company;
+  document.getElementById("mLocation").innerText= job.flag+" "+job.location;
+  document.getElementById("mDesc").innerText    = job.desc||"No description available.";
+  var sal="Not listed";
+  if(job.salMin&&job.salMax){
+    if(job.country==="in") sal="₹"+Math.round(job.salMin/100000)+"L - ₹"+Math.round(job.salMax/100000)+"L / year";
+    else if(job.country==="us") sal="$"+Math.round(job.salMin/1000)+"k - $"+Math.round(job.salMax/1000)+"k / year";
+    else sal="£"+Math.round(job.salMin/1000)+"k - £"+Math.round(job.salMax/1000)+"k / year";
+  }
+  document.getElementById("mSalary").innerText=sal;
+  var barColor=job.match>=70?"var(--green)":job.match>=40?"var(--orange)":"var(--muted)";
+  document.getElementById("mBadges").innerHTML=
+    "<div class='match-bar-wrap' style='max-width:200px'>"
+    +"<div class='match-bar-bg'><div class='match-bar-fill' style='width:"+job.match+"%;background:"+barColor+"'></div></div>"
+    +"<span class='match-pct' style='color:"+barColor+"'>"+job.match+"% match</span></div>"
+    +(job.remote?"<span class='badge b-remote'>🏠 Remote</span>":"");
+  document.getElementById("mApply").href   = job.applyUrl||"#";
+  document.getElementById("mCareers").href = "https://www.google.com/search?q="+encodeURIComponent(job.company+" careers jobs");
+
+  // Reset AI box
+  document.getElementById("aiTipsBox").innerHTML="<div style='font-size:.82rem;color:var(--muted)'>Click \"Get AI Tips\" to generate personalised interview tips for this job.</div>";
+  document.getElementById("aiTipsBtn").disabled=false;
+  document.getElementById("aiTipsBtn").innerText="🤖 Get AI Interview Tips";
+
+  // Show current status
+  var curStatus=jobStatus[job.id]||"";
+  document.querySelectorAll(".status-opt").forEach(function(b){
+    b.classList.remove("active-status");
+    if(b.innerText.toLowerCase().indexOf(curStatus)>-1 && curStatus) b.classList.add("active-status");
+  });
+  document.getElementById("jobModal").classList.add("open");
+}
+
+function closeModal(){
+  document.getElementById("jobModal").classList.remove("open");
+}
+
+function setStatus(status){
+  if(currentIdx===null) return;
+  var id=ALL_JOBS[currentIdx].id;
+  jobStatus[id]=status;
+  document.querySelectorAll(".status-opt").forEach(function(b){b.classList.remove("active-status");});
+  event.target.classList.add("active-status");
+  updateStats();
+  showToast("✅ Status updated to: "+status);
+}
+
+// ── AI Interview Tips via Groq ──
+async function getAITips(){
+  if(currentIdx===null) return;
+  var job=ALL_JOBS[currentIdx];
+  var btn=document.getElementById("aiTipsBtn");
+  btn.disabled=true; btn.innerText="⟳ Generating tips...";
+  document.getElementById("aiTipsBox").innerHTML="<div class='ai-loading'><div class='ai-spinner'></div>AI is analysing this job and generating your personal tips...</div>";
+  var tips=await fetchAITips(job);
+  document.getElementById("aiTipsBox").innerHTML="<div class='ai-tips'>"+esc(tips)+"</div>";
+  btn.disabled=false; btn.innerText="🔄 Regenerate Tips";
+}
+
+async function fetchAITips(job){
+  try{
+    var prompt="You are an expert Citrix interview coach. The candidate is Vishnu Reddy with 4.5 years of Citrix experience. "
+      +"Skills: "+PROFILE.skills+". "
+      +"He is applying for: '"+job.title+"' at '"+job.company+"' in "+job.location+".\n\n"
+      +"Job Description (first 500 chars): "+job.desc.substring(0,500)+"\n\n"
+      +"Give him 5 specific, practical interview tips for THIS job. "
+      +"Include: likely questions they will ask, what to highlight from his experience, any skill gaps to address. "
+      +"Be direct and specific. Format as numbered list.";
+
+    var res=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+GROQ_KEY},
+      body:JSON.stringify({
+        model:"llama-3.3-70b-versatile",
+        max_tokens:600,
+        messages:[{role:"user",content:prompt}]
+      })
+    });
+    var data=await res.json();
+    return data.choices&&data.choices[0]?data.choices[0].message.content:"Could not generate tips. Try again.";
+  }catch(e){
+    return "Error generating tips. Please check your connection and try again.";
+  }
+}
+
+document.getElementById("jobModal").addEventListener("click",function(e){if(e.target===this)closeModal();});
+
+function buildSkeletons(n){
+  var s="<div class='skel-grid'>";
+  for(var i=0;i<n;i++){
+    s+="<div class='skel-card'>"
+      +"<div style='display:flex;gap:12px;margin-bottom:12px'>"
+      +"<div class='sk-circle'></div>"
+      +"<div style='flex:1'><div class='sk m'></div><div class='sk s'></div></div>"
+      +"</div>"
+      +"<div class='sk f'></div><div class='sk m'></div><div class='sk s'></div>"
+      +"</div>";
+  }
+  return s+"</div>";
+}
+
+function showToast(msg){
+  var t=document.getElementById("toast");
+  t.innerText=msg; t.classList.add("show");
+  setTimeout(function(){t.classList.remove("show");},3000);
+}
+
+
+
+// ── Chat Assistant ──
+var chatHistory = [];
+var chatOpen = false;
+
+function toggleChat(){
+  chatOpen = !chatOpen;
+  document.getElementById("chatPanel").classList.toggle("open", chatOpen);
+  document.getElementById("chatFab").innerText = chatOpen ? "✕" : "🤖";
+  if(chatOpen) document.getElementById("chatInput").focus();
+}
+
+function sendChip(btn){
+  document.getElementById("chatInput").value = btn.innerText;
+  sendChat();
+}
+
+async function sendChat(){
+  var input = document.getElementById("chatInput");
+  var msg = input.value.trim();
+  if(!msg) return;
+  input.value = "";
+
+  // Add user message
+  addChatMsg(msg, "user");
+
+  // Show typing
+  var typingId = addTyping();
+  document.getElementById("chatSendBtn").disabled = true;
+
+  try{
+    // Detect intent - should we search jobs or answer with AI?
+    var isJobSearch = detectJobSearch(msg);
+
+    if(isJobSearch){
+      // Search real jobs via Adzuna then summarise with AI
+      var jobs = await searchJobsForChat(msg);
+      removeTyping(typingId);
+      if(jobs.length > 0){
+        var reply = await summariseJobsWithAI(msg, jobs);
+        addChatMsg(reply, "bot");
+        // Also show job cards in main area
+        showChatJobResults(jobs);
+      } else {
+        addChatMsg("I searched Adzuna for '"+msg+"' but couldn't find matching jobs right now. Try different keywords or check back later! 🔍", "bot");
+      }
+    } else {
+      // Pure AI career advice
+      var reply = await askCareerAI(msg);
+      removeTyping(typingId);
+      addChatMsg(reply, "bot");
+    }
+  } catch(e){
+    removeTyping(typingId);
+    addChatMsg("Sorry, something went wrong. Please try again! 🙏", "bot");
+  }
+
+  document.getElementById("chatSendBtn").disabled = false;
+}
+
+function detectJobSearch(msg){
+  var jobKw = ["job","jobs","opening","openings","hiring","vacancy","vacancies","role","roles","position","work","opportunity",
+    "citrix","vdi","netscaler","adc","euc","storefront","bangalore","hyderabad","mumbai","delhi","pune","chennai",
+    "india","usa","uk","remote","salary","lpa","show me","find","search","available","latest","new"];
+  var m = msg.toLowerCase();
+  return jobKw.filter(function(k){return m.indexOf(k)>-1;}).length >= 1;
+}
+
+async function searchJobsForChat(msg){
+  // Extract keywords from message
+  var keywords = extractKeywords(msg);
+  var country = extractCountry(msg);
+  var results = [];
+
+  for(var i=0; i<keywords.length; i++){
+    try{
+      var url = "https://api.adzuna.com/v1/api/jobs/"+country+"/search/1"
+        +"?app_id="+APP_ID+"&app_key="+APP_KEY
+        +"&results_per_page=5&what="+encodeURIComponent(keywords[i])
+        +"&max_days_old=15&sort_by=date&content-type=application/json";
+      var res = await fetch(url);
+      if(!res.ok) continue;
+      var data = await res.json();
+      if(data.results) results = results.concat(data.results);
+    }catch(e){}
+  }
+
+  // Deduplicate
+  var seen = {};
+  return results.filter(function(j){
+    if(seen[j.id]) return false;
+    seen[j.id]=true; return true;
+  }).slice(0,8);
+}
+
+function extractKeywords(msg){
+  var m = msg.toLowerCase();
+  if(m.indexOf("netscaler")>-1 || m.indexOf("adc")>-1) return ["NetScaler Engineer","Citrix ADC"];
+  if(m.indexOf("vdi")>-1 || m.indexOf("euc")>-1) return ["VDI Specialist","EUC Engineer"];
+  if(m.indexOf("architect")>-1) return ["Citrix Architect"];
+  if(m.indexOf("admin")>-1) return ["Citrix Administrator"];
+  if(m.indexOf("cloud")>-1 || m.indexOf("azure")>-1) return ["Azure Virtual Desktop","Cloud VDI"];
+  return ["Citrix Engineer","Citrix Administrator"];
+}
+
+function extractCountry(msg){
+  var m = msg.toLowerCase();
+  if(m.indexOf("usa")>-1 || m.indexOf("america")>-1 || m.indexOf("us ")>-1) return "us";
+  if(m.indexOf("uk")>-1 || m.indexOf("britain")>-1 || m.indexOf("london")>-1) return "gb";
+  return "in"; // default India
+}
+
+async function summariseJobsWithAI(userMsg, jobs){
+  var jobList = jobs.slice(0,5).map(function(j,i){
+    return (i+1)+". "+j.title+" at "+(j.company&&j.company.display_name?j.company.display_name:"Unknown")
+      +" — "+(j.location&&j.location.display_name?j.location.display_name:"")
+      +(j.salary_min?" — "+(j.salary_min/1000).toFixed(0)+"k-"+(j.salary_max/1000).toFixed(0)+"k":"");
+  }).join("
+");
+
+  var prompt = "You are Vishnu Reddy's personal Citrix job assistant. He has 4.5 years Citrix experience, skills: "+PROFILE.skills+".
+
+"
+    +"User asked: '"+userMsg+"'
+
+"
+    +"I found these real live jobs from Adzuna:
+"+jobList+"
+
+"
+    +"Give a helpful, friendly 2-3 sentence summary of these results. Mention top companies, locations, and if any look like good matches for Vishnu. Keep it conversational. End by saying results are shown below.";
+
+  try{
+    var res = await fetch("https://api.groq.com/openai/v1/chat/completions",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+GROQ_KEY},
+      body:JSON.stringify({model:"llama-3.3-70b-versatile",max_tokens:200,messages:[{role:"user",content:prompt}]})
+    });
+    var data = await res.json();
+    return data.choices&&data.choices[0] ? data.choices[0].message.content : "Found "+jobs.length+" jobs! Check them below 👇";
+  }catch(e){
+    return "Found "+jobs.length+" real live jobs for you! Check them below 👇";
+  }
+}
+
+async function askCareerAI(msg){
+  chatHistory.push({role:"user", content:msg});
+  if(chatHistory.length > 10) chatHistory = chatHistory.slice(-10);
+
+  var systemPrompt = "You are a personal Citrix career advisor for Vishnu Reddy. He has 4.5 years Citrix experience. "
+    +"His skills: "+PROFILE.skills+". He is based in Hyderabad, India. "
+    +"Answer career questions, salary queries, interview advice, skill guidance. "
+    +"Be friendly, direct, and specific to Citrix/EUC/VDI domain. Keep answers under 150 words. Use emojis occasionally.";
+
+  var messages = [{role:"system",content:systemPrompt}].concat(chatHistory);
+
+  try{
+    var res = await fetch("https://api.groq.com/openai/v1/chat/completions",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+GROQ_KEY},
+      body:JSON.stringify({model:"llama-3.3-70b-versatile",max_tokens:300,messages:messages})
+    });
+    var data = await res.json();
+    var reply = data.choices&&data.choices[0] ? data.choices[0].message.content : "I'm not sure about that. Try asking something else!";
+    chatHistory.push({role:"assistant", content:reply});
+    return reply;
+  }catch(e){
+    return "Something went wrong. Please try again! 🙏";
+  }
+}
+
+function showChatJobResults(rawJobs){
+  // Convert raw Adzuna results and show in main job container
+  var jobs = rawJobs.map(function(j){
+    var desc = j.description||"";
+    var matchData = calcMatch(j.title, desc);
+    return {
+      id:j.id, title:j.title||"Citrix Role",
+      company:(j.company&&j.company.display_name)?j.company.display_name:"Confidential",
+      location:(j.location&&j.location.display_name)?j.location.display_name:"",
+      country:"in", flag:"🔍",
+      desc:desc, created:j.created||"",
+      applyUrl:j.redirect_url||"",
+      salMin:j.salary_min||null, salMax:j.salary_max||null,
+      remote:desc.toLowerCase().indexOf("remote")>-1,
+      match:matchData.score, missing:matchData.missing
+    };
+  });
+
+  // Merge with existing jobs avoiding duplicates
+  jobs.forEach(function(j){
+    if(!ALL_JOBS.find(function(x){return x.id===j.id;})) ALL_JOBS.unshift(j);
+  });
+
+  activeFilter = "all";
+  document.querySelectorAll(".fbtn").forEach(function(b){b.classList.remove("active");});
+  document.querySelector(".fbtn").classList.add("active");
+  renderJobs();
+  updateStats();
+
+  // Scroll to jobs
+  document.getElementById("jobsContainer").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function addChatMsg(text, role){
+  var msgs = document.getElementById("chatMessages");
+  var div = document.createElement("div");
+  div.className = "chat-msg "+(role==="user"?"user":"");
+  var avatarIcon = role==="user" ? "V" : "🤖";
+  var avatarCls  = role==="user" ? "usr" : "bot";
+  var bubbleCls  = role==="user" ? "usr" : "bot";
+  // Convert newlines to <br>
+  var safeText = String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/
+/g,"<br>");
+  div.innerHTML = "<div class='msg-avatar "+avatarCls+"'>"+avatarIcon+"</div>"
+    +"<div class='msg-bubble "+bubbleCls+"'>"+safeText+"</div>";
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addTyping(){
+  var msgs = document.getElementById("chatMessages");
+  var id = "typing_"+Date.now();
+  var div = document.createElement("div");
+  div.className = "chat-msg"; div.id = id;
+  div.innerHTML = "<div class='msg-avatar bot'>🤖</div>"
+    +"<div class='msg-bubble bot'><div class='chat-typing'>"
+    +"<div class='typing-dot'></div><div class='typing-dot'></div><div class='typing-dot'></div>"
+    +"</div></div>";
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return id;
+}
+
+function removeTyping(id){
+  var el = document.getElementById(id);
+  if(el) el.remove();
+}
+
+function esc(s){
+  if(!s) return "";
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+</script>
+
+<!-- Chat FAB -->
+<button class="chat-fab" onclick="toggleChat()" id="chatFab" title="Ask AI Job Assistant">🤖</button>
+
+<!-- Chat Panel -->
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <div class="chat-bot-icon">🤖</div>
+      <div>
+        <div class="chat-title">Citrix Job Assistant</div>
+        <div class="chat-subtitle">● AI + Live Adzuna Data</div>
+      </div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-msg">
+      <div class="msg-avatar bot">🤖</div>
+      <div class="msg-bubble bot">Hey Vishnu! 👋 I'm your personal Citrix Job Assistant.<br><br>I can search <strong>real live jobs</strong> for you, give <strong>salary insights</strong>, <strong>interview tips</strong>, and answer any career question. Just ask me anything!</div>
+    </div>
+  </div>
+
+  <div class="chat-suggestions" id="chatSuggestions">
+    <button class="chat-chip" onclick="sendChip(this)">Jobs in Bangalore</button>
+    <button class="chat-chip" onclick="sendChip(this)">Remote Citrix jobs</button>
+    <button class="chat-chip" onclick="sendChip(this)">Salary for Citrix Architect</button>
+    <button class="chat-chip" onclick="sendChip(this)">IBM interview tips</button>
+    <button class="chat-chip" onclick="sendChip(this)">Best companies hiring</button>
+  </div>
+
+  <div class="chat-input-row">
+    <input class="chat-input" id="chatInput" placeholder="Ask me anything about Citrix jobs..." 
+      onkeydown="if(event.key==='Enter') sendChat()"/>
+    <button class="chat-send" id="chatSendBtn" onclick="sendChat()">➤</button>
+  </div>
+</div>
+
+</body>
+</html>
